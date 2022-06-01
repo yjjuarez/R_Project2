@@ -1,0 +1,104 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Introduction
+
+Scientific question: 
+How does the 92-bp deletion of the Cytidine monophospho-N-acetylnneuraminic acid hydroxylase (CMAH) gene in humans affect CMAH gene expression, and is the sequence identity any similar than that of mice and chimpanzees who do have expression of CMAH gene?
+
+
+Background: Cytidine monophospho-N-acetylnneuraminic acid hydroxylase is an enzyme that is produced by the CMAH gene. The CMAH gene synthesizes N-glycolyneuraminic acid (Neu5Gc) whichj is responsible for the production of sialic acids composed of nine-carbon atom sugars present on the surface of a cell. Sialic acids play a critical role in cell communication, infection, and the survival of pathogens. Humans do not have functional CMAH present in their genome due to a 92-bp exon deletion that occured about 2.5-3 Mya (Chou et al. 1998). Since humans do not express the CMAH gene, Neu5Gc is not genetically present unless it is through the consumption of red meats and dairy. The presence of Neu5Gc serves as a binding site for pathogens and toxins such as Meningitis, gonorrhoea, and other infections. A pseudogene, CMAHP, is present in humans, but still does not produce any NEu5Gc. Other mammals such as mice, chimpanzees, and cats have functional copies of CMAH which allows them to produce sialic acids. 
+
+
+Scientific hypothesis: If there is a deletion of the 92-bp in the CMAH gene, then the CMAH gene in humans would not be expressed indicating no production of sialic acids in humans and less similarity to CMAH genes present in mice or chimpanzees. 
+
+Analyses: We will perform multiple sequence alignment and differential expressional analysis and use a heatmap and msa pretty print to visualize how similar the human CMAH gene expression is to species like chimpanzees and mice. Multiple sequence alignment is performed to compare the regions in which CMAH is present or mutated and the data was gathered through the NCBI nucleotide. Differential expression analysis is visually represented through a heatmap to understand whether CMAH is expressed across the different species. 
+
+ 
+ Package Descriptions: 
+ 1.ggseqlogo: sequence logos for visulaizng RNA seq
+ 2.ggplot2: sequence logos for visulaizng RNA seq
+ 3.DeSeq2: differential expression analysis
+ 4.gplots: creates heat map
+ 5.ggmsa: Multiple sequence alignment 
+ 
+
+```{r}
+#instal necessary packaes using code below
+#BiocManager::install("ggseqlogo")
+
+#load in packages using 
+library(ggseqlogo)
+library(ggplot2)
+library(DESeq2)
+library(gplots)
+#BiocManager::install("ggmsa")
+library(ggmsa)
+```
+Performing Bioinformatics Analysis
+Loading in data from Uniprot databse 
+Downloaded fasta files from CMAH gene in humans and mice 
+Pathway commons for humans: Q9Y471
+Pathway commons foe mice: Q61419
+
+```{r}
+CMAH_mice <- readAAStringSet("mice_CMAH.fasta")
+CMAH_mice_read <- read.fasta(file = "mice_CMAH.fasta")
+
+
+CMAH_human <- readAAStringSet("human_CMAH.fasta")
+CMAH_human_read <- read.fasta(file = "human_CMAH.fasta")
+
+length(CMAH_mice_read)
+length(CMAH_human_read)
+
+
+```
+MSA & prettyprint 
+
+```{r}
+#example code, still trying to make it work with my data but general sturucture of msa alignment and creating prettyprint 
+library(msa)
+system.file("tex", "texshade.sty", package="msa")
+
+#Loading amino acid sequences 
+mySequenceFile <- system.file("examples", "exampleAA.fasta", package="msa")
+mySequences <- readAAStringSet(mySequenceFile)
+mySequences
+
+
+myFirstAlignment <- msa(mySequences)
+
+
+print(myFirstAlignment, show="complete")
+
+
+msaPrettyPrint(myFirstAlignment, output="pdf", showNames="none",
+showLogo="none", askForOverwrite=FALSE, verbose=FALSE)
+
+
+msaPrettyPrint(myFirstAlignment, y=c(164, 213), output="asis",
+showNames="none", showLogo="none", askForOverwrite=FALSE)
+
+
+```
+DEA and using heatmap to analyze expression
+
+```{r}
+#general code, need to apply my data into it
+CMAHgeneExp <- read.table("~/Dropbox/Projects/HeatmapForDevon/relGeneExpression_singleTable.txt",
+                      header=T, sep="\t")
+head(CMAHgeneExp)
+
+#extract numeric data into matrix
+rownames(CMAHgeneExp) <- CMAHgeneExp$gene
+CMAHgeneExp_matrix <- as.matrix(CMAHgeneExp[3:6])
+head(CMAHgeneExp_matrix)
+
+#create heatmap
+heatmap(CMAHgeneExp_matrix)
+
+```
+
