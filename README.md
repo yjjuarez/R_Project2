@@ -3,6 +3,6 @@ Scientific question: How does the 92-bp deletion of the Cytidine monophospho-N-a
 
 
 README files:
-Project 2 code draft rmd/html file: very rough draft, still trying to get code to work of my project 2
+Project 2 code draft rmd/html file: has code/ analysis for bioinformatics methods 
 Mice_CMAH fasta: sequence coding CMAH gene in mice
 Humans_CMAH fasta: sequence coding CMAH gene in humans (although nonfunctional due to mutation)
