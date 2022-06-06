@@ -1,0 +1,102 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Introduction
+
+Scientific question: 
+How does the 92-bp deletion of the Cytidine monophospho-N-acetylnneuraminic acid hydroxylase (CMAH) gene affect CMAH gene expression in humans, and is the sequence identity any similar than that of mice and chimpanzees who do express for the CMAH gene?
+
+
+Background: Cytidine monophospho-N-acetylnneuraminic acid hydroxylase is an enzyme that is produced by the CMAH gene. The CMAH gene synthesizes N-glycolyneuraminic acid (Neu5Gc) which is responsible for the production of sialic acids composed of nine-carbon atom sugars present on the surface of a cell. Sialic acids have a negative charge and are hydrophilic which enables it to have neural plasticity and blood cell charge repulsion (Med, 2008). Due to their structure, Sialic acids play a critical role in cell communication, infection, and the survival of pathogens. Humans do not have functional CMAH present in their genome due to a 92-bp exon deletion that occured about 2.5-3 Mya (Chou et al. 1998). Since humans do not express the CMAH gene, Neu5Gc is not genetically present unless it is through the consumption of red meats and dairy. However, humans do produce Neu5Ac which is similar to Neu5Gc except that it has one more oxygen atom. The presence of Neu5Gc serves as a binding site for pathogens and toxins such as Meningitis, gonorrhea, and other infections(Varki, et. al., 2009). A pseudogene, CMAHP, is present in humans, but still fails produce any NEu5Gc. High levels of Neu5Gc in humans have been linked to chronic inflammation, development of type-2-diabetes, and increased cancer risk. Other species such as mice, chimpanzees, and cats have functional copies of CMAH which allows them to produce sialic acids. 
+
+Scientific hypothesis: If there is a deletion of the 92-bp in the CMAH gene, then the CMAH gene in humans would not be expressed indicating no production of sialic acids in humans and less similarity to CMAH genes present in mice or chimpanzees. 
+
+Analyses: We will perform multiple sequence alignment and differential expression analysis and use a heat map and msa pretty print to visualize how similar the human CMAH gene expression is to species like chimpanzees and mice. Multiple sequence alignment is performed to compare the regions in which sequences of CMAH gene are similar or different in the mice and human sequences, information was gathered from the NCBI nucleotide database. Differential expression analysis is visually represented through a heatmap to understand whether CMAH is expressed in humans. 
+
+ 
+ Package Descriptions: 
+ 1.ggseqlogo: sequence logos for visualize RNA seq
+ 2.ggplot2: sequence logos for visualize RNA seq
+ 3.DeSeq2: differential expression analysis
+ 4.gplots: creates heat map
+ 5.msa: Multiple sequence alignment 
+ 
+
+```{r}
+#install necessary packaes using code below
+#BiocManager::install("ggseqlogo")
+
+#load in packages using 
+library(ggseqlogo)
+library(ggplot2)
+library(DESeq2)
+library(gplots)
+#BiocManager::install("ggmsa")
+library(msa)
+```
+Performing Bioinformatics Analysis
+Loading in data from Uniprot database 
+Downloaded fasta files from CMAH gene in humans and mice 
+Pathway commons for humans: Q9Y471
+Pathway commons foe mice: Q61419
+
+```{r}
+#installing packages using read.fasta to read FASTA formatted files, readAAStringSet used to load sequence from FAFSA file
+CMAH_mice <- readAAStringSet("mice_CMAH.fasta")
+CMAH_mice_read <- read.fasta(file = "mice_CMAH.fasta")
+#length function tells you the number of sequences on the file 
+length(CMAH_mice_read)
+
+#similar functions are used but on human gene instead of mice gene  
+CMAH_human <- readAAStringSet("human_CMAH.fasta")
+CMAH_human_read <- read.fasta(file = "human_CMAH.fasta")
+length(CMAH_human_read)
+
+
+```
+MSA & prettyprint 
+
+```{r}
+#example code, still trying to make it work with my data but general structure of msa alignment and creating prettyprint 
+library(msa)
+system.file("tex", "texshade.sty", package="msa")
+
+#Loading amino acid sequences 
+CMAH_sequences <- system.file("examples", "CMAH_mice.fasta", package="msa")
+CMAH_sequences <- readAAStringSet(mySequenceFile)
+#print out the seqeunces to make sure it's what we want, code check 
+print(CMAH_sequences)
+
+#aligning the CMAH seqeunces using the msa function for multiple sequence analysis 
+myFirstAlignment <- msa(CMAH_sequences)
+
+#print out the sequence alignment 
+print(myFirstAlignment, show="complete")
+
+#msaPrettyPrint pretty-prints the multiple alignments created, showNames="none" makes the names be supressed, output="pdf" makes alignment be printed as a PDF, the last two variables are used to building the pretty print
+msaPrettyPrint(myFirstAlignment, output="pdf", showNames="none",
+showLogo="none", askForOverwrite=FALSE, verbose=FALSE)
+
+
+```
+DEA and using heatmap to analyze expression
+
+
+```{r}
+#general code, need to apply my data into it
+CMAHgeneExp <- read.table("~/Dropbox/Projects/HeatmapForDevon/relGeneExpression_singleTable.txt",
+                      header=T, sep="\t")
+head(CMAHgeneExp)
+
+#extract numeric data into matrix
+rownames(CMAHgeneExp) <- CMAHgeneExp$gene
+CMAHgeneExp_matrix <- as.matrix(CMAHgeneExp[3:6])
+head(CMAHgeneExp_matrix)
+
+#create heatmap with matrix for CMAH expression
+heatmap(CMAHgeneExp_matrix)
+
+```
+
